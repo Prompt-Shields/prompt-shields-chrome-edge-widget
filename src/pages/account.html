@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://*.promptshields.com;
+    script-src 'self' 'wasm-unsafe-eval';
+    script-src-elem 'self';
+    style-src 'self';
+    img-src 'self' data: https:;
+    connect-src 'self' https://maps.googleapis.com https://*.auth0.com https://*.promptshields.com https://__API_HOST__;">
+  <title>Account Management - PromptShields</title>
+  <link rel="stylesheet" href="account.css">
+  <link rel="icon" type="image/png" sizes="16x16" href="../icon16.png">
+</head>
+
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Loading account information...</p>
+  </div>
+
+  <!-- Error overlay -->
+  <div id="error-overlay" class="error-overlay hidden">
+    <div class="error-container">
+      <h2>⚠️ Error</h2>
+      <p id="error-message">An error occurred while loading your account.</p>
+      <div class="error-actions">
+        <button id="retry-button" class="retry-button">Try Again</button>
+        <button id="close-error-button" class="secondary-button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div id="main-content" class="main-container hidden">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-content">
+        <div class="header-left">
+          <img src="../images/ps-icon.svg" alt="PromptShields" class="header-logo">
+          <h1>Account Management</h1>
+        </div>
+        <div class="header-right">
+          <button id="close-page-button" class="close-button" aria-label="Close page">
+            <span>✕</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Account Information Section -->
+    <section class="content-section">
+      <div class="section-container">
+        <h2 class="section-title">Account Information</h2>
+
+        <div class="profile-container">
+          <!-- User Profile -->
+          <div class="user-profile">
+            <div class="profile-image-container">
+              <img id="user-profile-image" src="../images/anonymous-user.svg" alt="Profile picture"
+                class="profile-image">
+              <div class="image-overlay">
+                <button id="change-photo-button" class="image-button" aria-label="Change profile photo">
+                  <span class="button-icon">📷</span>
+                  <span class="button-text">Change</span>
+                </button>
+                <button id="delete-photo-button" class="image-button delete-button" aria-label="Delete profile photo"
+                  class="hidden">
+                  <span class="button-icon">🗑️</span>
+                  <span class="button-text">Delete</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- File upload input (hidden) -->
+            <input type="file" id="photo-upload-input" accept=".jpg,.jpeg,.png,.gif" class="hidden">
+
+            <!-- User Info -->
+            <div class="user-info">
+              <h3 id="user-name" class="user-name">Loading...</h3>
+              <p id="user-email" class="user-email">Loading...</p>
+            </div>
+          </div>
+
+          <!-- Email Section -->
+          <div class="email-section">
+            <h3 class="subsection-title">Email</h3>
+            <p class="info-text">
+              To change your email, please contact
+              <a href="mailto:test@test.com" class="email-link">test@test.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Account Deletion Section -->
+    <section class="content-section danger-section">
+      <div class="section-container">
+        <h2 class="section-title danger-title">Delete Account</h2>
+        <div class="danger-content">
+          <p class="danger-text">
+            To delete your account, please contact
+            <a href="mailto:test@test.com" class="danger-link">test@test.com</a>
+          </p>
+          <p class="danger-warning">
+            ⚠️ Account deletion is permanent and cannot be undone. All your data will be permanently removed.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Confirmation Dialog -->
+  <div id="confirmation-dialog" class="dialog-overlay hidden">
+    <div class="dialog-container">
+      <h3 id="dialog-title" class="dialog-title">Confirm Action</h3>
+      <p id="dialog-message" class="dialog-message">Are you sure you want to perform this action?</p>
+      <div class="dialog-actions">
+        <button id="dialog-confirm-button" class="primary-button">Confirm</button>
+        <button id="dialog-cancel-button" class="secondary-button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Toast -->
+  <div id="success-toast" class="toast success-toast hidden">
+    <div class="toast-content">
+      <span class="toast-icon">✅</span>
+      <span id="success-message" class="toast-message">Operation completed successfully</span>
+    </div>
+  </div>
+
+  <!-- Error Toast -->
+  <div id="error-toast" class="toast error-toast hidden">
+    <div class="toast-content">
+      <span class="toast-icon">❌</span>
+      <span id="toast-error-message" class="toast-message">An error occurred</span>
+    </div>
+  </div>
+
+  <script src="account.js"></script>
+</body>
+
+</html>

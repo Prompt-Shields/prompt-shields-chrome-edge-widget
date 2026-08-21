@@ -1,0 +1,34 @@
+.idea/*
+package-lock.json
+/.vscode
+/node_modules
+/dist-edge
+/dist-chrome
+# Build-time config with real credentials (copy config.example.js)
+/src/config/config.js
+
+# --- BEGIN open-source hygiene (do not remove) ---
+# Never commit real credentials or local machine state.
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.local
+!*.example.local
+secrets.json
+secrets.*.json
+*.pem
+*.key
+!**/public*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+credentials.json
+service-account*.json
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+# --- END open-source hygiene ---

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy"
+    content="script-src-elem 'self'; default-src 'self' http://localhost:* http://127.0.0.1:* https://*.promptshields.com; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self' https://*.auth0.com http://localhost:* http://127.0.0.1:* https://*.promptshields.com http://localhost:8000 https://__API_HOST__;">
+  <title>Suggestions History - PromptShields</title>
+  <link rel="stylesheet" href="history.css">
+  <link rel="icon" type="image/png" sizes="16x16" href="../icon16.png">
+</head>
+
+<body>
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p>Loading suggestions history...</p>
+  </div>
+
+  <!-- Error overlay -->
+  <div id="error-overlay" class="error-overlay hidden">
+    <div class="error-container">
+      <h2>⚠️ Error</h2>
+      <p id="error-message">An error occurred while loading your history.</p>
+      <div class="error-actions">
+        <button id="retry-button" class="retry-button">Try Again</button>
+        <button id="close-error-button" class="secondary-button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div id="main-content" class="main-container hidden">
+    <!-- Header -->
+    <header class="page-header">
+      <div class="header-content">
+        <div class="header-left">
+          <img src="../images/ps-icon.svg" alt="PromptShields" class="header-logo">
+          <h1>Suggestions History</h1>
+        </div>
+        <div class="header-right">
+          <button id="close-page-button" class="close-button" aria-label="Close page">
+            <span>✕</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- History Content -->
+    <section class="history-section">
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-icon">📝</div>
+        <h3>No suggestions found</h3>
+        <p id="empty-message">Your suggestion history will appear here once you start using PromptShields.</p>
+      </div>
+
+      <!-- History List -->
+      <div id="history-list" class="history-list">
+        <!-- Suggestion items will be dynamically loaded here -->
+      </div>
+
+      <!-- Load More Button -->
+      <div id="load-more-container" class="load-more-container hidden">
+        <button id="load-more-button" class="load-more-button">
+          <span class="load-more-text">Load More</span>
+          <div class="load-more-spinner hidden"></div>
+        </button>
+      </div>
+
+      <!-- Infinite Scroll Loading -->
+      <div id="infinite-loading" class="infinite-loading hidden">
+        <div class="loading-spinner small"></div>
+        <span>Loading more suggestions...</span>
+      </div>
+    </section>
+  </div>
+
+
+  <!-- Suggestion Detail Modal -->
+  <div id="suggestion-modal" class="modal-overlay hidden">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modal-title" class="modal-title">Suggestion Details</h3>
+        <button id="modal-close-button" class="modal-close-button" aria-label="Close modal">
+          <span>✕</span>
+        </button>
+      </div>
+      <div class="modal-content">
+        <div class="suggestion-detail">
+          <div class="detail-section">
+            <h4>Original Text</h4>
+            <div id="modal-original-text" class="text-content original-text"></div>
+          </div>
+          <div class="detail-section">
+            <h4>Suggested Text</h4>
+            <div id="modal-suggested-text" class="text-content suggested-text"></div>
+          </div>
+          <div class="detail-metadata">
+            <div class="metadata-item">
+              <span class="metadata-label">Type:</span>
+              <span id="modal-suggestion-type" class="suggestion-type-badge"></span>
+            </div>
+            <div class="metadata-item">
+              <span class="metadata-label">Date:</span>
+              <span id="modal-timestamp"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <!-- Actions removed per user request -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Success Toast -->
+  <div id="success-toast" class="toast success-toast hidden">
+    <div class="toast-content">
+      <span class="toast-icon">✅</span>
+      <span id="success-message" class="toast-message">Operation completed successfully</span>
+    </div>
+  </div>
+
+  <!-- Error Toast -->
+  <div id="error-toast" class="toast error-toast hidden">
+    <div class="toast-content">
+      <span class="toast-icon">❌</span>
+      <span id="toast-error-message" class="toast-message">An error occurred</span>
+    </div>
+  </div>
+
+  <script src="history.js"></script>
+</body>
+
+</html>

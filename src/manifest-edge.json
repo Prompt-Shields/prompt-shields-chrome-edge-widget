@@ -1,0 +1,193 @@
+{
+  "manifest_version": 3,
+  "name": "PromptShields",
+  "version": "1.3",
+  "description": "Provides user-approved autocorrect suggestions as you type.",
+  "permissions": [
+    "activeTab",
+    "identity",
+    "storage",
+    "identity.email",
+    "alarms"
+  ],
+  "oauth2": {
+    "client_id": "hrENjEgrjCmSctuVaTA3XVRMbJP7qjqw",
+    "scopes": [
+      "email",
+      "profile",
+      "openid",
+      "offline_access"
+    ]
+  },
+  "host_permissions": [
+    "https://__API_HOST__/*",
+    "http://localhost:8000/*",
+    "https://*.openai.com/*",
+    "https://chat.openai.com/*",
+    "https://chatgpt.com/*",
+    "https://*.huggingface.co/*",
+    "https://huggingface.co/*",
+    "https://*.runwayml.com/*",
+    "https://*.deepmind.com/*",
+    "https://www.deepmind.com/*",
+    "https://*.anthropic.com/*",
+    "https://claude.ai/*",
+    "https://*.cohere.ai/*",
+    "https://cohere.ai/*",
+    "https://*.stability.ai/*",
+    "https://*.perplexity.ai/*",
+    "https://www.perplexity.ai/*",
+    "https://*.copy.ai/*",
+    "https://*.jasper.ai/*",
+    "https://www.jasper.ai/*",
+    "https://*.midjourney.com/*",
+    "https://www.midjourney.com/*",
+    "https://*.scribehow.com/*",
+    "https://scribehow.com/*",
+    "https://*.writesonic.com/*",
+    "https://writesonic.com/*",
+    "https://*.speechmatics.com/*",
+    "https://*.gradio.app/*",
+    "https://*.notion.so/*",
+    "https://*.fathom.video/*",
+    "https://*.gptzero.me/*",
+    "https://*.fireflies.ai/*",
+    "https://www.fireflies.ai/*",
+    "https://*.deepseek.com/*",
+    "https://www.deepseek.com/*",
+    "https://*.chatgpt.com/*",
+    "https://*.poe.com/*",
+    "https://poe.com/*",
+    "https://*.synthesia.io/*",
+    "https://www.synthesia.io/*",
+    "https://*.elevenlabs.io/*",
+    "https://www.elevenlabs.io/*",
+    "https://*.replika.ai/*",
+    "https://replika.ai/*",
+    "https://*.murf.ai/*",
+    "https://www.murf.ai/*",
+    "https://*.grammarly.com/*",
+    "https://www.grammarly.com/*",
+    "https://gemini.google.com/*",
+    "https://copilot.microsoft.com/*",
+    "https://beta.character.ai/*",
+    "https://you.com/*",
+    "https://chat.chatbotapp.ai/*",
+    "http://localhost/*",
+    "https://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/analyze.png",
+        "images/anonymous-user.svg",
+        "images/shield-check.svg",
+        "images/ps-icon.svg",
+        "images/shield-warning.svg",
+        "pages/account.html",
+        "pages/account.css",
+        "pages/account.js",
+        "pages/history.html",
+        "pages/history.css",
+        "pages/history.js",
+        "pages/settings.html",
+        "pages/settings.css",
+        "pages/settings.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.openai.com/*",
+        "https://chat.openai.com/*",
+        "https://chatgpt.com/*",
+        "https://*.huggingface.co/*",
+        "https://huggingface.co/*",
+        "https://*.runwayml.com/*",
+        "https://*.deepmind.com/*",
+        "https://www.deepmind.com/*",
+        "https://*.anthropic.com/*",
+        "https://claude.ai/*",
+        "https://*.cohere.ai/*",
+        "https://cohere.ai/*",
+        "https://*.stability.ai/*",
+        "https://*.perplexity.ai/*",
+        "https://www.perplexity.ai/*",
+        "https://*.copy.ai/*",
+        "https://*.jasper.ai/*",
+        "https://www.jasper.ai/*",
+        "https://*.midjourney.com/*",
+        "https://www.midjourney.com/*",
+        "https://*.scribehow.com/*",
+        "https://scribehow.com/*",
+        "https://*.writesonic.com/*",
+        "https://writesonic.com/*",
+        "https://*.speechmatics.com/*",
+        "https://*.gradio.app/*",
+        "https://*.notion.so/*",
+        "https://*.fathom.video/*",
+        "https://*.gptzero.me/*",
+        "https://*.fireflies.ai/*",
+        "https://www.fireflies.ai/*",
+        "https://*.deepseek.com/*",
+        "https://www.deepseek.com/*",
+        "https://*.chatgpt.com/*",
+        "https://*.poe.com/*",
+        "https://poe.com/*",
+        "https://*.synthesia.io/*",
+        "https://www.synthesia.io/*",
+        "https://*.elevenlabs.io/*",
+        "https://www.elevenlabs.io/*",
+        "https://*.replika.ai/*",
+        "https://replika.ai/*",
+        "https://*.murf.ai/*",
+        "https://www.murf.ai/*",
+        "https://*.grammarly.com/*",
+        "https://www.grammarly.com/*",
+        "https://gemini.google.com/*",
+        "https://copilot.microsoft.com/*",
+        "https://beta.character.ai/*",
+        "https://you.com/*",
+        "https://chat.chatbotapp.ai/*",
+        "http://localhost/*",
+        "https://localhost/*"
+      ],
+      "js": [
+        "lib/pii-detector.js",
+        "lib/redaction-tooltip.js",
+        "lib/violation-reporter.js",
+        "lib/issue-sidebar.js",
+        "lib/content-prescan.js",
+        "lib/page-extractor.js",
+        "lib/chat-redactor.js",
+        "lib/chat-client.js",
+        "lib/chat-panel.js",
+        "config/config.js",
+        "content.js"
+      ],
+      "css": [
+        "style.css"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://*.auth0.com http://localhost:* http://127.0.0.1:* https://*.promptshields.com http://localhost:8000 https://__API_HOST__; img-src 'self' data: https:; style-src 'self';"
+  },
+  "author": "PromptShields Team",
+  "homepage_url": "https://promptshields.com"
+}

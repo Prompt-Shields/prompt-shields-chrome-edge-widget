@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth0 Chrome Extension</title>
+  <script src="popup.js" defer></script>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+
+  <!--"images/shield-check.svg",-->
+  <!--"images/",-->
+  <!--"images/shield-warning.svg"-->
+
+
+  <div class="auth-container">
+    <div class="image-container">
+      <img id="auth-user-image" src="images/anonymous-user.svg" alt="User profile picture" />
+      <img id="auth-ps-logo" src="images/ps-icon.svg" alt="PromptShields logo" />
+    </div>
+    <div id="auth-text"></div>
+    <br />
+
+    <!-- Navigation buttons for authenticated users -->
+    <div id="nav-buttons" class="nav-buttons hidden">
+      <button id="accountButton" class="nav-button" aria-label="Open Account Management">
+        <span class="button-icon">👤</span>
+        <span class="button-text">Account</span>
+      </button>
+      <button id="historyButton" class="nav-button" aria-label="Open Suggestions History">
+        <span class="button-icon">📊</span>
+        <span class="button-text">History</span>
+      </button>
+      <button id="settingsButton" class="nav-button" aria-label="Open Settings">
+        <span class="button-icon">⚙️</span>
+        <span class="button-text">Settings</span>
+      </button>
+    </div>
+
+    <button class="loader" id="authButton"></button>
+  </div>
+</body>
+
+</html>

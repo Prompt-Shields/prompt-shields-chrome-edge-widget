@@ -1,0 +1,625 @@
+  .autocorrect-popup {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .autocorrect-popup button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .close-button {
+    /* Reset default styles */
+    all: unset;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    background-color: rgb(36, 63, 159);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+  }
+
+  .autocorrect-popup button:hover {
+    background: #f0f0f0;
+  }
+
+  /* DOM Highlighting Styles */
+  #prompt-shields-highlight {
+    position: absolute;
+    border: 2px solid #4285f4;
+    background-color: rgba(66, 133, 244, 0.1);
+    pointer-events: none;
+    z-index: 2147483647;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(66, 133, 244, 0.3);
+    transition: all 0.15s ease-out;
+  }
+
+  #prompt-shields-action-button {
+    position: absolute;
+    z-index: 2147483648;
+    pointer-events: auto;
+  }
+
+  #prompt-shields-action-button>div {
+    background: #4285f4;
+    color: white;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.15s ease-out;
+    user-select: none;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  #prompt-shields-action-button>div:hover {
+    background: #3367d6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Invisible Layer */
+  #prompt-shields-invisible-layer {
+    position: absolute;
+    background: transparent;
+    pointer-events: none;
+    z-index: 2147483646;
+    display: none;
+  }
+
+  /* Status Indicator */
+  #prompt-shields-status {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #4285f4;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: monospace;
+    z-index: 2147483646;
+    pointer-events: none;
+    opacity: 0.8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+/* ═══════════════════════════════════════════════════════════════
+   Ported from Safari widget (style.css): Grammarly-style shield +
+   sidebar + toast (v1.6) and in-page chat panel (v1.9) content UI.
+   ═══════════════════════════════════════════════════════════════ */
+/* ─── v1.6 Grammarly-style shield + sidebar + toast ──────────── */
+/* Mirror of prompt-shields-chrome-extension v1.8. Same class names,
+ * same behaviour, byte-equivalent visual surface. Lives alongside
+ * the legacy .promptshields-* ActionView styles above; the two layers
+ * don't overlap.
+ */
+
+.ps-shield {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #94a3b8;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.16);
+  transition: transform 100ms ease, background 100ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.ps-shield:hover { transform: scale(1.1); }
+.ps-shield:focus { outline: 2px solid #2563eb; outline-offset: 2px; }
+.ps-shield--clean { background: #10b981; }
+.ps-shield--has-issues { background: #d97706; }
+.ps-shield--high { background: #dc2626; }
+.ps-shield--dim { box-shadow: none; }
+
+.ps-shield__icon {
+  font-size: 13px;
+  line-height: 1;
+  color: white;
+  pointer-events: none;
+}
+
+.ps-shield__badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.ps-shield--clean .ps-shield__badge { display: none; }
+
+.ps-shield__preview {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  min-width: 200px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.10);
+  padding: 8px 10px;
+  font-size: 12px;
+  display: none;
+  pointer-events: none;
+  z-index: 1;
+}
+.ps-shield:hover .ps-shield__preview,
+.ps-shield:focus .ps-shield__preview { display: block; }
+.ps-shield--clean .ps-shield__preview { display: none !important; }
+
+.ps-shield__preview-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+.ps-shield__preview-count {
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.ps-shield__preview-hint {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #f1f5f9;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.ps-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  height: 100vh;
+  background: #ffffff;
+  color: #0f172a;
+  border-left: 1px solid #e2e8f0;
+  box-shadow: -8px 0 24px rgba(15, 23, 42, 0.10);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  z-index: 2147483647;
+  transform: translateX(100%);
+  transition: transform 200ms ease;
+  display: flex;
+  flex-direction: column;
+}
+.ps-sidebar--open { transform: translateX(0); }
+
+.ps-sidebar__header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.ps-sidebar__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  grid-column: 1;
+  grid-row: 1;
+}
+.ps-sidebar__logo { font-size: 16px; }
+.ps-sidebar__subtitle {
+  grid-column: 1;
+  grid-row: 2;
+  color: #64748b;
+  font-size: 11px;
+}
+.ps-sidebar__close {
+  all: unset;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: #94a3b8;
+  padding: 4px 8px;
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+.ps-sidebar__close:hover { color: #0f172a; }
+
+.ps-sidebar__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ps-sidebar__empty {
+  text-align: center;
+  color: #64748b;
+  padding: 32px 16px;
+}
+
+.ps-sidebar__footer {
+  padding: 10px 12px;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  gap: 8px;
+}
+.ps-sidebar__btn {
+  all: unset;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #0f172a;
+  transition: background 80ms ease;
+}
+.ps-sidebar__btn:hover { background: #e2e8f0; }
+.ps-sidebar__btn--primary { background: #2563eb; color: white; }
+.ps-sidebar__btn--primary:hover { background: #1d4ed8; }
+
+.ps-issue {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 100ms ease;
+}
+.ps-issue--ignored { opacity: 0.5; }
+
+.ps-issue__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ps-issue__icon { font-size: 14px; }
+.ps-issue__label { font-weight: 600; font-size: 12px; }
+
+.ps-issue__excerpt {
+  font-size: 12px;
+  color: #475569;
+  background: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border-left: 2px solid #cbd5e1;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  word-break: break-word;
+}
+.ps-issue__hit {
+  background: #fef3c7;
+  color: #78350f;
+  padding: 1px 3px;
+  border-radius: 3px;
+}
+
+.ps-issue__tip { font-size: 11px; color: #64748b; font-style: italic; }
+
+.ps-issue__actions {
+  display: flex;
+  gap: 6px;
+}
+.ps-issue__btn {
+  all: unset;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #0f172a;
+  transition: background 80ms ease;
+}
+.ps-issue__btn:hover { background: #e2e8f0; }
+.ps-issue__btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+.ps-issue__btn--primary { background: #2563eb; color: white; }
+.ps-issue__btn--primary:hover { background: #1d4ed8; }
+
+.ps-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: white;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.20);
+  z-index: 2147483647;
+  animation: ps-toast-in 200ms ease-out;
+}
+.ps-toast--out { opacity: 0; transition: opacity 200ms ease; }
+.ps-toast__msg { font-weight: 500; }
+.ps-toast__btn {
+  all: unset;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #93c5fd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 80ms ease;
+}
+.ps-toast__btn:hover { background: rgba(255, 255, 255, 0.08); }
+
+@keyframes ps-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── v1.9 In-page chat panel ─────────────────────────────────── */
+/* Floating action button + slide-in panel used by chat-panel.js.
+ * Mirrors the sidebar conventions: same z-index, same transition
+ * timing (200ms ease), same brand palette (#2563eb / #1d4ed8),
+ * same dark text (#0f172a), borders (#e2e8f0), hover fill (#f1f5f9).
+ */
+
+/* Floating chat button ------------------------------------------ */
+.ps-chat-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.20);
+  cursor: pointer;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 100ms ease, transform 100ms ease;
+}
+.ps-chat-fab:hover { background: #1d4ed8; transform: scale(1.06); }
+.ps-chat-fab:focus { outline: 2px solid #2563eb; outline-offset: 3px; }
+/* Hidden while the panel is open so it doesn't sit on top of the panel. */
+.ps-chat-fab--hidden { display: none; }
+
+.ps-chat-fab__icon {
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Slide-in panel ------------------------------------------------- */
+.ps-chat-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  height: 100vh;
+  background: #ffffff;
+  color: #0f172a;
+  border-left: 1px solid #e2e8f0;
+  box-shadow: -8px 0 24px rgba(15, 23, 42, 0.10);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  z-index: 2147483647;
+  transform: translateX(100%);
+  transition: transform 200ms ease;
+  display: flex;
+  flex-direction: column;
+}
+.ps-chat-panel--open { transform: translateX(0); }
+
+/* Panel header --------------------------------------------------- */
+.ps-chat-panel__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 8px;
+}
+
+.ps-chat-panel__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ps-chat-panel__context {
+  font-size: 11px;
+  color: #64748b;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ps-chat-panel__close {
+  all: unset;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  color: #94a3b8;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 80ms ease;
+  margin-left: auto;
+}
+.ps-chat-panel__close:hover { color: #0f172a; }
+
+/* Message list --------------------------------------------------- */
+.ps-chat-panel__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Chat message bubbles ------------------------------------------- */
+.ps-chat-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+}
+
+.ps-chat-msg--user {
+  align-self: flex-end;
+}
+.ps-chat-msg--user .ps-chat-msg__body {
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 14px 14px 4px 14px;
+}
+
+.ps-chat-msg--assistant {
+  align-self: flex-start;
+}
+.ps-chat-msg--assistant .ps-chat-msg__body {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-radius: 14px 14px 14px 4px;
+}
+
+.ps-chat-msg__body {
+  padding: 8px 12px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Thinking disclosure block -------------------------------------- */
+/* Renders as a <details> element inserted above the answer body.
+ * Muted styling so it doesn't distract from the reply.
+ */
+.ps-chat-think {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #94a3b8;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.ps-chat-think__summary {
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 11px;
+  list-style: none;
+  user-select: none;
+}
+.ps-chat-think__summary::-webkit-details-marker { display: none; }
+
+.ps-chat-think__body {
+  color: #64748b;
+  font-style: italic;
+  font-size: 11px;
+  white-space: pre-wrap;
+  padding-top: 6px;
+  line-height: 1.5;
+}
+
+/* Composer area -------------------------------------------------- */
+.ps-chat-panel__composer {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border-top: 1px solid #e2e8f0;
+  gap: 6px;
+}
+
+.ps-chat-panel__redact {
+  font-size: 11px;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 10px;
+  padding: 3px 10px;
+  align-self: flex-start;
+}
+
+.ps-chat-panel__input {
+  width: 100%;
+  resize: vertical;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #0f172a;
+  background: #ffffff;
+  box-sizing: border-box;
+  transition: border-color 80ms ease;
+}
+.ps-chat-panel__input:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.ps-chat-panel__send {
+  all: unset;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  transition: background 80ms ease;
+}
+.ps-chat-panel__send:hover { background: #1d4ed8; }

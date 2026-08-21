@@ -1,0 +1,92 @@
+{
+  "name": "prompt-shields-chrome-extension",
+  "version": "1.3.0",
+  "description": "Chrome extension that provides user-approved autocorrect suggestions for sensitive data",
+  "main": "dist-chrome/background.js",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "build:dev": "webpack --mode=development",
+    "build:chrome": "webpack --mode=production --env target=chrome",
+    "build:chrome:dev": "webpack --mode=development --env target=chrome",
+    "build:edge": "webpack --mode=production --env target=edge",
+    "build:edge:dev": "webpack --mode=development --env target=edge",
+    "build:all": "npm run build:chrome && npm run build:edge",
+    "build:all:dev": "npm run build:chrome:dev && npm run build:edge:dev",
+    "build:complete": "npm run clean && npm run build:all && npm run verify",
+    "build:complete:dev": "npm run clean && npm run build:all:dev && npm run verify",
+    "build:complete:chrome": "npm run clean:chrome && npm run build:chrome && npm run verify:chrome",
+    "build:complete:chrome:dev": "npm run clean:chrome && npm run build:chrome:dev && npm run verify:chrome",
+    "build:complete:edge": "npm run clean:edge && npm run build:edge && npm run verify:edge",
+    "build:complete:edge:dev": "npm run clean:edge && npm run build:edge:dev && npm run verify:edge",
+    "watch": "webpack --mode=development --watch",
+    "watch:chrome": "webpack --mode=development --watch --env target=chrome",
+    "watch:edge": "webpack --mode=development --watch --env target=edge",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:lib": "node --test src/lib/tests/*.test.js",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "clean": "rm -rf dist-chrome dist-edge",
+    "clean:chrome": "rm -rf dist-chrome",
+    "clean:edge": "rm -rf dist-edge",
+    "dev": "npm run clean:chrome && npm run build:chrome:dev",
+    "dev:edge": "npm run clean:edge && npm run build:edge:dev",
+    "prod": "npm run clean && npm run build:all",
+    "prod:chrome": "npm run clean:chrome && npm run build:chrome",
+    "prod:edge": "npm run clean:edge && npm run build:edge",
+    "postbuild:chrome": "npm run copy:chrome && npm run verify:chrome",
+    "postbuild:chrome:dev": "npm run copy:chrome && npm run verify:chrome",
+    "postbuild:edge": "npm run copy:edge && npm run verify:edge",
+    "postbuild:edge:dev": "npm run copy:edge && npm run verify:edge",
+    "copy:all": "npm run copy:chrome && npm run copy:edge",
+    "copy:chrome": "node scripts/copy-assets.js chrome",
+    "copy:edge": "node scripts/copy-assets.js edge",
+    "verify:chrome": "node scripts/verify-build.js chrome",
+    "verify:edge": "node scripts/verify-build.js edge"
+  },
+  "keywords": [
+    "chrome-extension",
+    "edge-extension",
+    "privacy",
+    "security",
+    "pii-detection",
+    "autocorrect"
+  ],
+  "author": "PromptShields Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.0 ",
+    "babel-loader": "^10.1.0",
+    "copy-webpack-plugin": "^14.0.0",
+    "css-loader": "^7.1.4",
+    "eslint": "^10.0.2",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "mini-css-extract-plugin": "^2.10.0",
+    "string-replace-loader": "^3.3.0",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.105.4",
+    "webpack-cli": "^6.0.1"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/test/setup.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/test/**",
+      "!src/config/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  }
+}

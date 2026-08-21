@@ -1,0 +1,186 @@
+/* Utility classes for CSP compliance */
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
+
+.opacity-low {
+  opacity: 0.2 !important;
+}
+
+.opacity-full {
+  opacity: 1 !important;
+}
+
+.bg-logout {
+  background-color: #9C1415 !important;
+}
+
+.bg-login {
+  background-color: #04AA6D !important;
+}
+
+#auth-user-image {
+  width: 150px;
+  height: 120px;
+}
+
+.auth-container {
+  padding-top: 12px;
+}
+
+#auth-ps-logo {
+  background: white;
+  clip-path: circle();
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  position: relative;
+  top: -48px;
+  left: 110px;
+}
+
+#auth-user-image {
+  padding-left: 16px;
+  padding-right: 16px;
+  opacity: 20%;
+  background: white;
+  clip-path: circle();
+}
+
+.block {
+  display: block;
+  width: 100%;
+  border: none;
+  color: white;
+  background-color: #04AA6D;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+}
+
+.close-button:hover {
+  background-color: #ff4500;
+  /* Custom color on hover */
+}
+
+.loader {
+  border: 3px solid darkgray;
+  /* Light grey */
+  border-top: 3px solid white;
+  /* Blue */
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Navigation buttons styles */
+.nav-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+
+.nav-buttons.hidden {
+  display: none;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  color: #495057;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.nav-button:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button:focus {
+  outline: 2px solid #04AA6D;
+  outline-offset: 2px;
+}
+
+.nav-button .button-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.nav-button .button-text {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Responsive adjustments for small popup */
+@media (max-width: 320px) {
+  .nav-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nav-button {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+/* Accessibility improvements */
+.nav-button:focus-visible {
+  outline: 2px solid #04AA6D;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .nav-button {
+    border-width: 2px;
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .nav-button {
+    transition: none;
+  }
+
+  .nav-button:hover {
+    transform: none;
+  }
+}
