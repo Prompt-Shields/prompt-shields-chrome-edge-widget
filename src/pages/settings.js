@@ -322,7 +322,7 @@ class SettingsManager {
       if (text.length === 0) {
         textarea.value = TEXT_PLACEHOLDER;
       } else {
-        textarea.value = `${text  }\n\n${TEXT_PLACEHOLDER}`;
+        textarea.value = `${text}\n\n${TEXT_PLACEHOLDER}`;
       }
       this.handlePromptTemplateChange();
     }
