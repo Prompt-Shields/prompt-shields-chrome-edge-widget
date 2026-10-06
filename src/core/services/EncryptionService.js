@@ -47,7 +47,7 @@ export class EncryptionService {
       const encryptedData = await crypto.subtle.encrypt(
         {
           name: this.algorithm,
-          iv: iv
+          iv
         },
         key,
         data
@@ -67,7 +67,7 @@ export class EncryptionService {
 
     } catch (error) {
       this.logger.error('Encryption failed', error);
-      throw new Error('Failed to encrypt data');
+      throw new Error('Failed to encrypt data', { cause: error });
     }
   }
 
@@ -104,7 +104,7 @@ export class EncryptionService {
       const decryptedData = await crypto.subtle.decrypt(
         {
           name: this.algorithm,
-          iv: iv
+          iv
         },
         key,
         encrypted
@@ -116,7 +116,7 @@ export class EncryptionService {
 
     } catch (error) {
       this.logger.error('Decryption failed', error);
-      throw new Error('Failed to decrypt data');
+      throw new Error('Failed to decrypt data', { cause: error });
     }
   }
 
@@ -152,7 +152,7 @@ export class EncryptionService {
       const key = await crypto.subtle.deriveKey(
         {
           name: 'PBKDF2',
-          salt: salt,
+          salt,
           iterations: this.iterations,
           hash: 'SHA-256'
         },
@@ -175,7 +175,7 @@ export class EncryptionService {
 
     } catch (error) {
       this.logger.error('Key derivation failed', error);
-      throw new Error('Failed to derive encryption key');
+      throw new Error('Failed to derive encryption key', { cause: error });
     }
   }
 
@@ -223,7 +223,7 @@ export class EncryptionService {
 
     } catch (error) {
       this.logger.error('Master key generation failed', error);
-      throw new Error('Failed to get or create master key');
+      throw new Error('Failed to get or create master key', { cause: error });
     }
   }
 
@@ -305,7 +305,7 @@ export class EncryptionService {
    */
   async validateEncryption() {
     try {
-      const testData = 'test_encryption_' + Date.now();
+      const testData = `test_encryption_${Date.now()}`;
       const encrypted = await this.encrypt(testData);
       const decrypted = await this.decrypt(encrypted);
 

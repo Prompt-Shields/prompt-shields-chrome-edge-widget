@@ -331,7 +331,7 @@ npm run lint
 npm run lint:fix
 ```
 
-ESLint is configured via `.eslintrc.js` with Babel parser support.
+ESLint is configured via `eslint.config.js` (flat config). The `src/lib/` content-script modules are plain unbundled scripts in their own style, so only correctness rules apply to them.
 
 ## Contributing
 

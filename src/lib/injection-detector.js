@@ -46,12 +46,12 @@
   // Unicode tag block — invisible, but decodes 1:1 to ASCII.
   var TAG_RE = /(?:\uDB40[\uDC00-\uDC7F])+/g
   // Bidi embedding / override / isolate controls ("Trojan Source").
-  var BIDI_RE = /[‪-‮⁦-⁩]+/g
+  var BIDI_RE = /[\u202A-\u202E\u2066-\u2069]+/g
   // Zero-width characters. ZWJ / ZWNJ alone are legitimate (emoji
   // sequences, Persian, Indic scripts), so they only count inside a run
   // that also contains a "never legitimate mid-text" character, or as a
   // run of 3+ which is a common steganography carrier.
-  var ZW_RE = /[​-‍⁠﻿]+/g
+  var ZW_RE = /[\u200B-\u200D\u2060\uFEFF]+/g
 
   function decodeTags (s) {
     var out = ''
@@ -65,7 +65,7 @@
 
   function suspiciousZeroWidth (run) {
     if (run.length >= 3) return true
-    return /[​⁠﻿]/.test(run)
+    return /[\u200B\u2060\uFEFF]/.test(run)
   }
 
   function hiddenMatches (text) {
@@ -102,7 +102,7 @@
     ZW_RE.lastIndex = 0
     while ((m = ZW_RE.exec(text)) !== null) {
       // A single BOM at the very start is an artefact of copying from a file.
-      if (m.index === 0 && m[0] === '﻿') continue
+      if (m.index === 0 && m[0] === '\uFEFF') continue
       if (!suspiciousZeroWidth(m[0])) continue
       hits.push({
         category: 'hiddenText',

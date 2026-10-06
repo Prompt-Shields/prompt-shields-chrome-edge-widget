@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars -- interface stubs: parameters document the contract */
 /**
  * Authentication Service Interface
  * Defines the contract for authentication operations

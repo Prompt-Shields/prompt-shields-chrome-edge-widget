@@ -114,7 +114,7 @@ function main() {
 
   console.log('🚀 Starting build verification...\n');
 
-  let allPassed = true;
+  let allPassed;
 
   if (target) {
     allPassed = verifyDistFolder(target);

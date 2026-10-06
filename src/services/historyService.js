@@ -92,7 +92,7 @@ class HistoryService {
       return processedTypes;
     } catch (error) {
       ErrorHandler.logError(error, { context: 'HistoryService.getSuggestionTypes' });
-      throw new Error(ErrorHandler.sanitizeErrorMessage(error));
+      throw new Error(ErrorHandler.sanitizeErrorMessage(error), { cause: error });
     }
   }
 
@@ -191,7 +191,7 @@ class HistoryService {
       return processedData;
     } catch (error) {
       ErrorHandler.logError(error, { context: 'HistoryService.getSuggestionsHistory', options });
-      throw new Error(ErrorHandler.sanitizeErrorMessage(error));
+      throw new Error(ErrorHandler.sanitizeErrorMessage(error), { cause: error });
     }
   }
 

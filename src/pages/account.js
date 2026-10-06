@@ -142,7 +142,7 @@ class AccountManager {
       // Update UI
       await this.updateUserInterface();
     } catch (error) {
-      throw new Error(`Failed to load account data: ${error.message}`);
+      throw new Error(`Failed to load account data: ${error.message}`, { cause: error });
     }
   }
 
@@ -170,7 +170,7 @@ class AccountManager {
         photo_url: payload.picture || '../images/anonymous-user.svg'
       };
     } catch (error) {
-      throw new Error(`Failed to decode user data: ${error.message}`);
+      throw new Error(`Failed to decode user data: ${error.message}`, { cause: error });
     }
   }
 
@@ -381,11 +381,11 @@ class AccountManager {
     this.hideDialog();
 
     switch (action) {
-      case 'delete-photo':
-        await this.executeDeletePhoto();
-        break;
-      default:
-        console.warn('Unknown dialog action:', action);
+    case 'delete-photo':
+      await this.executeDeletePhoto();
+      break;
+    default:
+      console.warn('Unknown dialog action:', action);
     }
   }
 

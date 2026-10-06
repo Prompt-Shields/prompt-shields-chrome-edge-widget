@@ -194,17 +194,19 @@ class BackgroundServiceManager extends IAuthenticationObserver {
 
     try {
       switch (type) {
-      case MessageTypes.CONTENT_AUTH_UPDATE:
+      case MessageTypes.CONTENT_AUTH_UPDATE: {
         const isAuthenticated = await this.authService.isAuthenticated();
         sendResponse({ isAuthenticated });
         break;
+      }
 
-      case MessageTypes.GET_CREDENTIALS:
+      case MessageTypes.GET_CREDENTIALS: {
         const credentials = await this.credentialStorage.getCredentials();
         sendResponse({ credentials });
         break;
+      }
 
-      case MessageTypes.GET_PROFILE:
+      case MessageTypes.GET_PROFILE: {
         const profile = await this.getProfileForRequest();
         sendResponse({
           success: !!profile,
@@ -212,6 +214,7 @@ class BackgroundServiceManager extends IAuthenticationObserver {
           error: profile ? null : 'Profile not available'
         });
         break;
+      }
 
       case 'openPopup':
         // Handle popup open request from content script
@@ -493,7 +496,7 @@ class BackgroundServiceManager extends IAuthenticationObserver {
             chrome.tabs.sendMessage(tab.id, {
               type: MessageTypes.AUTHENTICATION_UPDATE,
               isAuthenticated
-            }, (response) => {
+            }, () => {
               if (chrome.runtime.lastError) {
                 // Content script might not be loaded yet - this is normal
                 this.logger?.debug(`Content script not ready on tab ${tab.id}`);

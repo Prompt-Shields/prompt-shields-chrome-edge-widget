@@ -38,7 +38,7 @@ export class GoogleAnalyticsTracker extends AnalyticsTracker {
     // Generate or retrieve persistent client ID
     this._clientId = await this._getOrCreateClientId();
 
-    console.log(`[GoogleAnalyticsTracker] Initialized`);
+    console.log('[GoogleAnalyticsTracker] Initialized');
     console.log(`[GoogleAnalyticsTracker] Measurement ID: ${this._measurementId}`);
     console.log(`[GoogleAnalyticsTracker] Client ID: ${this._clientId}`);
 

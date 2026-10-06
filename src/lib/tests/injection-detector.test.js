@@ -44,14 +44,14 @@ test('decodes and flags Unicode tag smuggling', () => {
 })
 
 test('flags bidi overrides and zero-width runs', () => {
-  assert.strictEqual(D.findMatches('abc‮def').length, 1)
-  assert.strictEqual(D.findMatches('pay​​​now').length, 1)
-  assert.strictEqual(D.findMatches('one​two').length, 1)
+  assert.strictEqual(D.findMatches('abc\u202Edef').length, 1)
+  assert.strictEqual(D.findMatches('pay\u200B\u200B\u200Bnow').length, 1)
+  assert.strictEqual(D.findMatches('one\u200Btwo').length, 1)
 })
 
 test('leaves legitimate zero-width joiners and a leading BOM alone', () => {
-  assert.deepStrictEqual(D.findMatches('family \u{1F468}‍\u{1F469}‍\u{1F467}'), [])
-  assert.deepStrictEqual(D.findMatches('﻿hello world'), [])
+  assert.deepStrictEqual(D.findMatches('family \u{1F468}\u200D\u{1F469}\u200D\u{1F467}'), [])
+  assert.deepStrictEqual(D.findMatches('\uFEFFhello world'), [])
 })
 
 test('redacting every hit removes the payload', () => {

@@ -139,11 +139,11 @@ test('getConfig delivers local policy even when Atlas reporting is not configure
 })
 
 test('missing chrome.storage.managed means no policy', async () => {
-  const saved = chrome.storage.managed
-  delete chrome.storage.managed
+  const saved = globalThis.chrome.storage.managed
+  delete globalThis.chrome.storage.managed
   try {
     assert.deepStrictEqual(await B.readManagedPolicy(), {})
   } finally {
-    chrome.storage.managed = saved
+    globalThis.chrome.storage.managed = saved
   }
 })
