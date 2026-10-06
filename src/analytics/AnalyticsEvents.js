@@ -37,7 +37,7 @@ export function anonymizeValue(value) {
     hash = ((hash << 5) - hash) + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
-  return 'anon_' + Math.abs(hash).toString(16).substring(0, 8);
+  return `anon_${Math.abs(hash).toString(16).substring(0, 8)}`;
 }
 
 /**
@@ -76,7 +76,7 @@ export function sanitizeError(error) {
   // Remove potential URLs with paths (keep domain only)
   sanitized = sanitized.replace(/https?:\/\/[^\s]+/g, (match) => {
     try {
-      return '[URL:' + new URL(match).hostname + ']';
+      return `[URL:${new URL(match).hostname}]`;
     } catch {
       return '[URL]';
     }
@@ -94,7 +94,7 @@ export function sanitizeError(error) {
 
   // Truncate to reasonable length
   if (sanitized.length > 200) {
-    sanitized = sanitized.substring(0, 200) + '...';
+    sanitized = `${sanitized.substring(0, 200)}...`;
   }
 
   return sanitized;

@@ -7,7 +7,7 @@
  *
  * `config.js` is gitignored — it holds real credentials and must never be
  * committed. Webpack reads the `CONFIGS` object below at build time and emits
- * ONLY the target environment's block to `dist-*/config/config.js`, so a
+ * ONLY the target environment's block to `dist-<target>/config/config.js`, so a
  * production build never contains your dev configuration.
  *
  * Note: everything here ships inside the extension bundle and is readable by

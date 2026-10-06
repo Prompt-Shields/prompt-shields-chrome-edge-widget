@@ -60,7 +60,7 @@
       else if (msg.closed) { if (handlers.onClose) handlers.onClose() }
     })
     port.postMessage({ type: 'CHAT_REQUEST', payload: payload })
-    return { cancel: function () { try { port.disconnect() } catch (e) {} }, redactionSummary: payload.redactionSummary }
+    return { cancel: function () { try { port.disconnect() } catch (e) { /* already disconnected */ } }, redactionSummary: payload.redactionSummary }
   }
 
   root.PromptShieldsChatClient = {

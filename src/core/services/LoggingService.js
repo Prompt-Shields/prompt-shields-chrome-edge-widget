@@ -340,7 +340,7 @@ export class LoggingService {
    * @param {string} level - New log level
    */
   setLevel(level) {
-    if (this.levels.hasOwnProperty(level)) {
+    if (Object.prototype.hasOwnProperty.call(this.levels, level)) {
       this.config.level = level;
       this.currentLevel = this.levels[level];
       this.info('Log level changed', { newLevel: level });

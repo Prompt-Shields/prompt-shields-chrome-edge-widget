@@ -22,7 +22,6 @@ function getEnvConfig(configContent, environment) {
     // Create a function that returns the configs object
     // This safely evaluates the config without executing other code
     const configsStr = configsMatch[1];
-    // eslint-disable-next-line no-new-func
     const configsObj = new Function(`return ${configsStr}`)();
 
     if (!configsObj[environment]) {
@@ -36,166 +35,23 @@ function getEnvConfig(configContent, environment) {
   }
 }
 
-module.exports = (env, argv) => {
-  const isProduction = argv.mode === 'production';
-  const target = env.target || 'chrome'; // Default to chrome, can be 'edge'
-
-  // Determine environment for config file
-  let configEnv;
-  if (env.environment) {
-    configEnv = env.environment;
-  } else {
-    // Default based on production mode
-    configEnv = isProduction ? 'prod' : 'dev';
-  }
-
-  console.log(`Building for ${target} with ${configEnv} configuration (mode: ${argv.mode})`);
-
-  // Get environment-specific API host for manifest and HTML transformations
-  const fs = require('fs');
-  const configFileContent = fs.readFileSync('./src/config/config.js', 'utf8');
-  const envConfig = getEnvConfig(configFileContent, configEnv);
-  const apiHost = envConfig.api.host;
-
-  console.log(`Using API host: ${apiHost}`);
-
-  return {
-    entry: {
-      background: './src/background.js',
-      content: './src/content.js',
-      popup: './src/popup.js',
-      'pages/settings': './src/pages/settings.js',
-      'pages/account': './src/pages/account.js',
-      'pages/history': './src/pages/history.js'
-    },
-    output: {
-      path: path.resolve(__dirname, `dist-${target}`),
-      filename: '[name].js',
-      clean: true
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                presets: ['@babel/preset-env']
-              }
-            },
-            {
-              loader: 'string-replace-loader',
-              options: {
-                search: '__API_HOST__',
-                replace: apiHost,
-                flags: 'g'
-              }
-            }
-          ]
-        },
-        {
-          test: /\.css$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            'css-loader'
-          ]
-        }
-      ]
-    },
-    plugins: [
-      new MiniCssExtractPlugin({
-        filename: '[name].css'
-      }),
-      new CopyPlugin({
-        patterns: [
-          {
-            from: `src/manifest-${target}.json`,
-            to: 'manifest.json',
-            transform(content) {
-              let manifestStr = content.toString();
-
-              manifestStr = manifestStr.replace(/__API_HOST__/g, apiHost);
-
-              const manifest = JSON.parse(manifestStr);
-
-              // Update name based on environment
-              if (configEnv === 'dev') {
-                manifest.name = `${manifest.name} Dev`;
-              }
-
-              return JSON.stringify(manifest, null, 2);
-            }
-          },
-          { from: 'src/popup.html', to: 'popup.html' },
-          { from: 'src/popup.css', to: 'popup.css' },
-          { from: 'src/style.css', to: 'style.css' },
-          // Transform HTML files to use the correct API host in CSP headers
-          {
-            from: 'src/pages/account.html',
-            to: 'pages/account.html',
-            transform(content) {
-              return content.toString().replace(/__API_HOST__/g, apiHost);
-            }
-          },
-          { from: 'src/pages/account.css', to: 'pages/account.css' },
-          {
-            from: 'src/pages/settings.html',
-            to: 'pages/settings.html',
-            transform(content) {
-              return content.toString().replace(/__API_HOST__/g, apiHost);
-            }
-          },
-          { from: 'src/pages/settings.css', to: 'pages/settings.css' },
-          {
-            from: 'src/pages/history.html',
-            to: 'pages/history.html',
-            transform(content) {
-              return content.toString().replace(/__API_HOST__/g, apiHost);
-            }
-          },
-          { from: 'src/pages/history.css', to: 'pages/history.css' },
-          { from: 'src/images', to: 'images' },
-          { from: 'src/icons', to: '.' },
-          // Ported Safari content-script modules (copied raw, not bundled).
-          // Exclude the node:test module tests from the extension output.
-          {
-            from: 'src/lib',
-            to: 'lib',
-            globOptions: { ignore: ['**/tests/**'] },
-          },
-          // Copy unified config file with ONLY the selected environment's configuration
-          // This is important for security - we don't want to expose other environment configs
-          {
-            from: 'src/config/config.js',
-            to: 'config/config.js',
-            transform(content) {
-              const configContent = content.toString();
-
-              // Extract the specific environment's config using regex
-              // Match the config object for the target environment
-              const configMatch = configContent.match(new RegExp(
-                `${configEnv}:\\s*\\{[\\s\\S]*?(?=\\n  \\w+:|\\n\\};)`, 'm'
-              ));
-
-              if (!configMatch) {
-                console.warn(`Could not extract ${configEnv} config, using fallback approach`);
-                // Fallback: just inject the environment variable
-                return configContent.replace(
-                  '// BUILD_TIME_ENVIRONMENT_PLACEHOLDER',
-                  `// Build-time environment injection\nconst BUILD_TIME_ENVIRONMENT = '${configEnv}';`
-                );
-              }
-
-              // Create a new config file that only contains the selected environment
-              const singleEnvConfig = `/**
+/**
+ * Render the single-environment runtime config module. The same source is
+ * emitted to dist-<target>/config/config.js (for importScripts in the service
+ * worker) and bundled wherever extension code requires config/config.js, so
+ * the gitignored src/config/config.js only ever has to hold the CONFIGS data.
+ * @param {Object} envConfig - One environment's block from CONFIGS
+ * @param {string} configEnv - 'dev' or 'prod'
+ * @returns {string} JavaScript source
+ */
+function renderRuntimeConfig(envConfig, configEnv) {
+  return `/**
  * PromptShields Configuration
  * Environment: ${configEnv}
  * Generated at build time - contains only ${configEnv} configuration
  */
 
-const CONFIG = ${JSON.stringify(getEnvConfig(configContent, configEnv), null, 2)};
+const CONFIG = ${JSON.stringify(envConfig, null, 2)};
 
 function buildApiEndpoints(apiConfig) {
   const { baseUrl } = apiConfig;
@@ -380,7 +236,171 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = { config: config, Config: Config };
 }
 `;
-              return singleEnvConfig;
+}
+
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+  const target = env.target || 'chrome'; // Default to chrome, can be 'edge'
+
+  // Determine environment for config file
+  let configEnv;
+  if (env.environment) {
+    configEnv = env.environment;
+  } else {
+    // Default based on production mode
+    configEnv = isProduction ? 'prod' : 'dev';
+  }
+
+  console.log(`Building for ${target} with ${configEnv} configuration (mode: ${argv.mode})`);
+
+  // Get environment-specific API host for manifest and HTML transformations
+  const fs = require('fs');
+  const configFileContent = fs.readFileSync('./src/config/config.js', 'utf8');
+  const envConfig = getEnvConfig(configFileContent, configEnv);
+  const apiHost = envConfig.api.host;
+
+  console.log(`Using API host: ${apiHost}`);
+
+  return {
+    entry: {
+      background: './src/background.js',
+      content: './src/content.js',
+      popup: './src/popup.js',
+      'pages/settings': './src/pages/settings.js',
+      'pages/account': './src/pages/account.js',
+      'pages/history': './src/pages/history.js'
+    },
+    output: {
+      path: path.resolve(__dirname, `dist-${target}`),
+      filename: '[name].js',
+      clean: true
+    },
+    module: {
+      rules: [
+        {
+          // Extension code that requires config/config.js gets the generated
+          // single-environment runtime, never the raw (multi-env) source.
+          test: path.resolve(__dirname, 'src/config/config.js'),
+          use: [{
+            loader: path.resolve(__dirname, 'scripts/runtime-config-loader.js'),
+            options: { source: renderRuntimeConfig(envConfig, configEnv) }
+          }]
+        },
+        {
+          test: /\.js$/,
+          exclude: [/node_modules/, path.resolve(__dirname, 'src/config/config.js')],
+          use: [
+            {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env']
+              }
+            },
+            {
+              loader: 'string-replace-loader',
+              options: {
+                search: '__API_HOST__',
+                replace: apiHost,
+                flags: 'g'
+              }
+            }
+          ]
+        },
+        {
+          test: /\.css$/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader'
+          ]
+        }
+      ]
+    },
+    plugins: [
+      new MiniCssExtractPlugin({
+        filename: '[name].css'
+      }),
+      new CopyPlugin({
+        patterns: [
+          {
+            from: `src/manifest-${target}.json`,
+            to: 'manifest.json',
+            transform(content) {
+              let manifestStr = content.toString();
+
+              manifestStr = manifestStr.replace(/__API_HOST__/g, apiHost);
+
+              const manifest = JSON.parse(manifestStr);
+
+              // Update name based on environment
+              if (configEnv === 'dev') {
+                manifest.name = `${manifest.name} Dev`;
+              }
+
+              return JSON.stringify(manifest, null, 2);
+            }
+          },
+          { from: 'src/managed_schema.json', to: 'managed_schema.json' },
+          { from: 'src/popup.html', to: 'popup.html' },
+          { from: 'src/popup.css', to: 'popup.css' },
+          { from: 'src/style.css', to: 'style.css' },
+          // Transform HTML files to use the correct API host in CSP headers
+          {
+            from: 'src/pages/account.html',
+            to: 'pages/account.html',
+            transform(content) {
+              return content.toString().replace(/__API_HOST__/g, apiHost);
+            }
+          },
+          { from: 'src/pages/account.css', to: 'pages/account.css' },
+          {
+            from: 'src/pages/settings.html',
+            to: 'pages/settings.html',
+            transform(content) {
+              return content.toString().replace(/__API_HOST__/g, apiHost);
+            }
+          },
+          { from: 'src/pages/settings.css', to: 'pages/settings.css' },
+          {
+            from: 'src/pages/history.html',
+            to: 'pages/history.html',
+            transform(content) {
+              return content.toString().replace(/__API_HOST__/g, apiHost);
+            }
+          },
+          { from: 'src/pages/history.css', to: 'pages/history.css' },
+          { from: 'src/images', to: 'images' },
+          { from: 'src/icons', to: '.' },
+          // Ported Safari content-script modules (copied raw, not bundled).
+          // Exclude the node:test module tests from the extension output.
+          {
+            from: 'src/lib',
+            to: 'lib',
+            globOptions: { ignore: ['**/tests/**'] },
+          },
+          // Copy unified config file with ONLY the selected environment's configuration
+          // This is important for security - we don't want to expose other environment configs
+          {
+            from: 'src/config/config.js',
+            to: 'config/config.js',
+            transform(content) {
+              const configContent = content.toString();
+
+              // Extract the specific environment's config using regex
+              // Match the config object for the target environment
+              const configMatch = configContent.match(new RegExp(
+                `${configEnv}:\\s*\\{[\\s\\S]*?(?=\\n  \\w+:|\\n\\};)`, 'm'
+              ));
+
+              if (!configMatch) {
+                console.warn(`Could not extract ${configEnv} config, using fallback approach`);
+                // Fallback: just inject the environment variable
+                return configContent.replace(
+                  '// BUILD_TIME_ENVIRONMENT_PLACEHOLDER',
+                  `// Build-time environment injection\nconst BUILD_TIME_ENVIRONMENT = '${configEnv}';`
+                );
+              }
+
+              return renderRuntimeConfig(getEnvConfig(configContent, configEnv), configEnv);
             }
           },
           // Copy other config files (messageTypes, securityConfig) but NOT config.js again

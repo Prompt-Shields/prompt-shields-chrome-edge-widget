@@ -6,7 +6,6 @@
  * Following Open/Closed Principle - open for extension (new trackers), closed for modification
  */
 
-import { AnalyticsConfiguration } from './AnalyticsTracker.js';
 import { Events, AnalyticsUserProperties } from './AnalyticsEvents.js';
 
 // Storage key for analytics enabled state
