@@ -55,11 +55,28 @@
     bitcoinAddress: { label: 'Bitcoin Address', icon: '₿', tip: 'Wallet identifiers are linkable to real-world identity.' },
     ipAddress: { label: 'IP Address', icon: '🌐', tip: 'IPs can identify your network. Use a generic placeholder.' },
     currency: { label: 'Money Amount', icon: '💰', tip: "Confidential financial figures shouldn't reach external AI." },
-    personName: { label: 'Person Name', icon: '👤', tip: 'Use a role or reference number instead of a real name.' }
+    personName: { label: 'Person Name', icon: '👤', tip: 'Use a role or reference number instead of a real name.' },
+    promptInjection: { label: 'Prompt Injection', icon: '🧨', tip: 'This text tries to override the AI\'s instructions. If you pasted it from an email, web page or document, remove it before sending.' },
+    hiddenText: { label: 'Hidden Text', icon: '👻', tip: 'Invisible characters can carry instructions a model reads but you cannot see. Apply to strip them.' },
+    confidentialTerm: { label: 'Confidential Term', icon: '🔒', tip: 'Your organisation marks this term as confidential.' }
   }
 
   function copyFor (category) {
     return COPY[category] || { label: category, icon: '⚠️', tip: 'Sensitive data detected.' }
+  }
+
+  // Per-match copy: org-defined rules carry their own label / tip, and
+  // hidden-text hits carry a decoded `detail` the user needs to see.
+  function copyForMatch (match) {
+    var base = copyFor(match.category)
+    var tip = match.tip || base.tip
+    if (match.detail) tip = match.detail + ' — ' + tip
+    return { label: match.label || base.label, icon: base.icon, tip: tip }
+  }
+
+  var HIGH_CATEGORIES = {
+    apiKey: true, jwt: true, creditCard: true, ssn: true, iban: true,
+    bitcoinAddress: true, promptInjection: true, hiddenText: true
   }
 
   // ─── Frequency suppression on the shield badge ───────────────────
@@ -154,9 +171,7 @@
       badge.textContent = String(visibleCount)
       var anyHigh = currentMatches.some(function (m, i) {
         if (ignored.has(i)) return false
-        var c = m.category
-        return c === 'apiKey' || c === 'jwt' || c === 'creditCard' ||
-               c === 'ssn' || c === 'iban' || c === 'bitcoinAddress'
+        return m.severity === 'high' || HIGH_CATEGORIES[m.category] === true
       })
       shieldEl.classList.toggle('ps-shield--high', anyHigh)
     }
@@ -202,7 +217,7 @@
     row.setAttribute('data-index', String(index))
     if (ignored.has(index)) row.classList.add('ps-issue--ignored')
 
-    var c = copyFor(match.category)
+    var c = copyForMatch(match)
 
     var head = el('div', 'ps-issue__head')
     head.appendChild(el('span', 'ps-issue__icon', c.icon))

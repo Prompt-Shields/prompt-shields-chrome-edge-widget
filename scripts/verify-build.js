@@ -18,6 +18,7 @@ function verifyDistFolder(target) {
   const distPath = `dist-${target}`;
   const requiredFiles = [
     'manifest.json',
+    'managed_schema.json',
     'background.js',
     'content.js',
     'popup.js',

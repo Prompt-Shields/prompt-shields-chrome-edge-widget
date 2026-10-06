@@ -1,0 +1,76 @@
+{
+  "type": "object",
+  "properties": {
+    "policyEndpoint": {
+      "title": "Policy bundle URL",
+      "description": "Full URL of the policy endpoint (GET /api/v1/policies). Point this at a self-hosted / on-premises server to keep all control-plane traffic inside your network.",
+      "type": "string"
+    },
+    "violationsUrl": {
+      "title": "Violations URL (legacy)",
+      "description": "Full URL of POST /api/v1/policies/violations.",
+      "type": "string"
+    },
+    "telemetryUrl": {
+      "title": "Telemetry URL",
+      "description": "Full URL of POST /api/v1/telemetry/prompt-events. Only SHA-256 prompt hashes and category counts are sent — never prompt text.",
+      "type": "string"
+    },
+    "apiKey": {
+      "title": "Telemetry API key",
+      "description": "Organisation API key sent as X-API-Key / Bearer to the endpoints above.",
+      "type": "string"
+    },
+    "telemetryDisabled": {
+      "title": "Disable all telemetry",
+      "description": "When true, no detection events leave the device, regardless of any other setting. All detection still runs locally.",
+      "type": "boolean"
+    },
+    "enforcementMode": {
+      "title": "Enforcement mode",
+      "description": "guideline = coach the user and let them decide (recommended to start); strict = redact automatically and block flagged uploads.",
+      "type": "string",
+      "enum": ["guideline", "strict"]
+    },
+    "appealUrl": {
+      "title": "Exception request URL",
+      "description": "Link shown to users when something is blocked, e.g. your service-desk form.",
+      "type": "string"
+    },
+    "injectionDetection": {
+      "title": "Prompt-injection and hidden-text detection",
+      "description": "Flag instruction-override phrasing and invisible Unicode in prompts and uploaded text files. Default true.",
+      "type": "boolean"
+    },
+    "customRules": {
+      "title": "Confidential-term rules",
+      "description": "Organisation-specific terms or patterns to treat as confidential (project code names, client names, document-ID formats).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "pattern": { "type": "string" },
+          "regex": { "type": "boolean" },
+          "caseSensitive": { "type": "boolean" },
+          "severity": { "type": "string", "enum": ["low", "medium", "high"] },
+          "tip": { "type": "string" },
+          "redaction": { "type": "string" }
+        }
+      }
+    },
+    "fileGuard": {
+      "title": "Upload guard",
+      "description": "Checks files uploaded to AI sites: confidential file names, and high-severity content in text files.",
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "scanContents": { "type": "boolean" },
+        "maxScanBytes": { "type": "integer" },
+        "blockedNamePatterns": { "type": "array", "items": { "type": "string" } },
+        "allowedNamePatterns": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

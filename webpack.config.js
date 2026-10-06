@@ -128,6 +128,7 @@ module.exports = (env, argv) => {
               return JSON.stringify(manifest, null, 2);
             }
           },
+          { from: 'src/managed_schema.json', to: 'managed_schema.json' },
           { from: 'src/popup.html', to: 'popup.html' },
           { from: 'src/popup.css', to: 'popup.css' },
           { from: 'src/style.css', to: 'style.css' },
