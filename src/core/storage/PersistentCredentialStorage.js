@@ -67,7 +67,7 @@ export class PersistentCredentialStorage extends ICredentialStorage {
     } catch (error) {
       this.logger.error('Failed to store credentials', error);
       securityPolicy.recordViolation('credential_storage_error', { error: error.message });
-      throw new Error('Failed to store credentials securely');
+      throw new Error('Failed to store credentials securely', { cause: error });
     }
   }
 
@@ -150,7 +150,7 @@ export class PersistentCredentialStorage extends ICredentialStorage {
 
     } catch (error) {
       this.logger.error('Failed to clear credentials', error);
-      throw new Error('Failed to clear credentials');
+      throw new Error('Failed to clear credentials', { cause: error });
     }
   }
 

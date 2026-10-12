@@ -5,7 +5,6 @@
  */
 
 import { IAuthenticationService, IAuthenticationObserver } from '../interfaces/IAuthenticationService.js';
-import { MessageTypes } from '../../config/messageTypes.js';
 
 /**
  * Production-ready authentication service with persistent session management

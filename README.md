@@ -23,6 +23,11 @@ PromptShields works as a content script injected into supported AI platforms. Wh
 
 ### Key Features
 
+- **On-device detection** — PII, prompt injection (direct and pasted-in), and hidden Unicode text, with no network call
+- **Organisation confidential terms** — admin-defined terms and patterns; lightweight DLP that needs no Purview / data labelling
+- **Upload guard** — flags confidential file names and scans text files for hidden instructions before they reach an AI site
+- **Enterprise policy** — configure via Intune / GPO (`chrome.storage.managed`); point telemetry at an on-prem server or switch it off entirely
+- **Coach or enforce** — `guideline` mode nudges users; `strict` mode redacts and blocks
 - **On-page text analysis** with a non-intrusive hover-based UI
 - **Configurable suggestion types** — create, edit, toggle, and reset categories from the Settings page
 - **User-approved changes only** — suggested text must be explicitly accepted before any modification
@@ -287,6 +292,13 @@ The config system generates the following endpoints from the base URL:
 
 Templated URLs (with `{param}` placeholders) can be resolved using `config.buildApiUrl(endpointKey, params)`.
 
+## Enterprise Deployment
+
+IT and security teams: see [docs/ENTERPRISE_DEPLOYMENT.md](docs/ENTERPRISE_DEPLOYMENT.md)
+for what the extension does on each endpoint, every permission and outbound data
+flow, on-premises / telemetry-off operation, Intune and GPO deployment, the full
+policy reference (`src/managed_schema.json`), and known limits.
+
 ## Authentication
 
 The extension uses **Auth0** with the OAuth2 authorization code flow via `chrome.identity.launchWebAuthFlow`. Tokens are encrypted and stored using `chrome.storage.local`. The background service worker manages the full token lifecycle including refresh and validation.
@@ -294,6 +306,9 @@ The extension uses **Auth0** with the OAuth2 authorization code flow via `chrome
 ## Testing
 
 ```bash
+# Content-script module tests (node:test, no browser needed)
+npm run test:lib
+
 # Run tests
 npm test
 
@@ -316,7 +331,7 @@ npm run lint
 npm run lint:fix
 ```
 
-ESLint is configured via `.eslintrc.js` with Babel parser support.
+ESLint is configured via `eslint.config.js` (flat config). The `src/lib/` content-script modules are plain unbundled scripts in their own style, so only correctness rules apply to them.
 
 ## Contributing
 

@@ -30,6 +30,9 @@
 //   lib/redaction-tooltip.js     → window.PromptShieldsRedactionTooltip   (legacy fallback)
 //   lib/violation-reporter.js    → window.PromptShieldsViolationReporter
 //   lib/issue-sidebar.js         → window.PromptShieldsIssueSidebar       (v1.6 Grammarly-style)
+//   lib/injection-detector.js    → window.PromptShieldsInjectionDetector  (optional)
+//   lib/custom-rules.js          → window.PromptShieldsCustomRules        (optional)
+//   lib/file-guard.js            → window.PromptShieldsFileGuard          (optional)
 //
 // v1.5 → v1.6: Switched the primary surface from the modal-ish
 // redaction tooltip to the Grammarly-style sidebar (persistent shield
@@ -50,6 +53,9 @@
   var Tooltip = window.PromptShieldsRedactionTooltip
   var Reporter = window.PromptShieldsViolationReporter
   var Sidebar = window.PromptShieldsIssueSidebar
+  var Injection = window.PromptShieldsInjectionDetector
+  var CustomRules = window.PromptShieldsCustomRules
+  var FileGuard = window.PromptShieldsFileGuard
 
   if (!Detector || !Reporter || !Sidebar) {
     console.warn('[PromptShields prescan] core modules missing; prescan disabled.')
@@ -64,11 +70,46 @@
     apiKey: null,
     enforcementMode: 'guideline', // 'guideline' (log+coach) | 'strict'
     appealUrl: null,
-    clientVersion: '1.4'
+    clientVersion: '1.4',
+    injectionDetection: true,     // prompt-injection + hidden-text detector
+    customRules: [],              // org-defined confidential terms (custom-rules.js)
+    fileGuard: { enabled: true }, // upload guard policy (file-guard.js)
+    telemetryDisabled: false      // true = nothing leaves the device
+  }
+
+  var compiledRules = []
+  var fileGuardPolicy = FileGuard ? FileGuard.normalizePolicy(atlasConfig.fileGuard) : null
+
+  function applyConfig (cfg) {
+    if (!cfg || typeof cfg !== 'object') return
+    Object.assign(atlasConfig, cfg)
+    compiledRules = CustomRules ? CustomRules.compile(atlasConfig.customRules) : []
+    if (FileGuard) fileGuardPolicy = FileGuard.normalizePolicy(atlasConfig.fileGuard)
+    // Re-scan the active input under the new policy: config can land after
+    // the user started typing (service-worker cold start), or change mid-
+    // session when IT pushes a new managed policy.
+    lastSeenText = ''
+    if (lastTarget) evaluate(lastTarget)
   }
 
   function telemetryEnabled () {
-    return !!(atlasConfig.telemetryUrl && atlasConfig.apiKey)
+    return !atlasConfig.telemetryDisabled && !!(atlasConfig.telemetryUrl && atlasConfig.apiKey)
+  }
+
+  // Every detector, layered: org rules and injection hits are more specific
+  // than generic PII, so they claim overlapping ranges first ("Project
+  // Falcon" is a confidential term, not a person name).
+  function scan (text) {
+    var specific = []
+    if (Injection && atlasConfig.injectionDetection !== false) {
+      specific = Injection.findMatches(text)
+    }
+    if (CustomRules && compiledRules.length) {
+      specific = CustomRules.merge(specific, CustomRules.findMatches(text, compiledRules))
+    }
+    var pii = Detector.findMatches(text)
+    if (specific.length === 0) return pii
+    return CustomRules ? CustomRules.merge(specific, pii) : specific.concat(pii)
   }
 
   var DEBOUNCE_MS = 30
@@ -83,10 +124,15 @@
   function getEditable (event) {
     var t = event && event.target
     if (!t) return null
-    if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') return t
+    if (t.tagName === 'TEXTAREA') return t
+    // Text-like inputs only: a file input's value is "C:\fakepath\…", and
+    // password fields must never be echoed into the sidebar excerpt.
+    if (t.tagName === 'INPUT') return TEXT_INPUT_TYPES[String(t.type || 'text').toLowerCase()] ? t : null
     if (t.isContentEditable) return t
     return null
   }
+
+  var TEXT_INPUT_TYPES = { text: true, search: true, email: true, url: true, tel: true }
 
   function readText (target) {
     if (!target) return ''
@@ -114,7 +160,10 @@
     return h.toString(36)
   }
 
-  function severityFor (byCategory) {
+  function severityFor (byCategory, matches) {
+    if (matches && matches.some(function (m) { return m.severity === 'high' })) return 'high'
+    if (byCategory.promptInjection || byCategory.hiddenText) return 'high'
+    if (byCategory.confidentialFile || byCategory.confidentialTerm) return 'high'
     if (byCategory.apiKey || byCategory.jwt || byCategory.creditCard) return 'high'
     if (byCategory.ssn || byCategory.iban || byCategory.bitcoinAddress) return 'high'
     if (byCategory.email || byCategory.phone || byCategory.ipAddress) return 'medium'
@@ -137,7 +186,7 @@
     lastSeenText = text
 
     var t0 = performance.now()
-    var matches = Detector.findMatches(text)
+    var matches = scan(text)
     var ms = performance.now() - t0
     if (ms > 50) {
       console.debug('[PromptShields prescan] detection took ' + ms.toFixed(1) + 'ms on ' + text.length + ' chars')
@@ -250,18 +299,18 @@
         prompt: originalText,
         eventKind: 'violation',
         actionTaken: actionTaken,
-        severity: severityFor(byCategory),
+        severity: severityFor(byCategory, subset),
         byCategory: byCategory
       }).catch(function () { /* swallow — reporter queues offline */ })
       return
     }
-    if (!atlasConfig.endpoint || !atlasConfig.apiKey) return
+    if (atlasConfig.telemetryDisabled || !atlasConfig.endpoint || !atlasConfig.apiKey) return
     Reporter.report({
       endpoint: atlasConfig.endpoint,
       apiKey: atlasConfig.apiKey,
       prompt: originalText,
       actionTaken: actionTaken,
-      severity: severityFor(byCategory),
+      severity: severityFor(byCategory, subset),
       matches: subset,
       byCategory: byCategory,
       detectorId: 'pii-detector-v1',
@@ -280,7 +329,7 @@
     if (!telemetryEnabled()) return
     var text = readText(target)
     if (!text || !text.trim()) return
-    var matches = Detector.findMatches(text)
+    var matches = scan(text)
     var wasRedacted = redactedPrompts.has(target)
     var action = Reporter.classifySubmission(matches.length, wasRedacted)
     if (!action) return
@@ -327,6 +376,20 @@
     recordSubmission(t)
   }, true)
   window.addEventListener('resize', onWindowResize, true)
+
+  // Upload guard: confidential file names + hidden instructions in text
+  // files. Reports only the hashed file name and category counts.
+  if (FileGuard) {
+    FileGuard.install({
+      getPolicy: function () { return fileGuardPolicy },
+      getMode: function () { return atlasConfig.enforcementMode === 'strict' ? 'strict' : 'guideline' },
+      getAppealUrl: function () { return atlasConfig.appealUrl },
+      scan: scan,
+      onDecision: function (d) {
+        sendViolation(d.fileName || '', [], d.byCategory, d.actionTaken)
+      }
+    })
+  }
   window.addEventListener('scroll', onWindowResize, { passive: true, capture: true })
 
   // ─── Comms with background script ────────────────────────────────
@@ -338,7 +401,7 @@
     browser.runtime.onMessage.addListener(function (msg, _sender, sendResponse) {
       if (!msg || !msg.type) return false
       if (msg.type === 'configUpdate') {
-        if (msg.config) Object.assign(atlasConfig, msg.config)
+        if (msg.config) applyConfig(msg.config)
         sendResponse && sendResponse({ ok: true })
       } else if (msg.type === 'policyUpdate') {
         if (Tooltip && Tooltip.resetSuppression) Tooltip.resetSuppression()
@@ -353,7 +416,7 @@
           })
           return true
         }
-        if (atlasConfig.endpoint && atlasConfig.apiKey) {
+        if (!atlasConfig.telemetryDisabled && atlasConfig.endpoint && atlasConfig.apiKey) {
           Reporter.flushQueue(atlasConfig.endpoint, atlasConfig.apiKey).then(function (n) {
             sendResponse && sendResponse({ ok: true, flushed: n })
           })
@@ -367,7 +430,7 @@
     // Hydrate config on load.
     try {
       browser.runtime.sendMessage({ type: 'getConfig' }, function (config) {
-        if (config && typeof config === 'object') Object.assign(atlasConfig, config)
+        if (config && typeof config === 'object') applyConfig(config)
       })
     } catch (e) { /* ignore — atlas not configured */ }
   }

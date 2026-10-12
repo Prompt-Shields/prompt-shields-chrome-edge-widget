@@ -322,7 +322,7 @@ class SettingsManager {
       if (text.length === 0) {
         textarea.value = TEXT_PLACEHOLDER;
       } else {
-        textarea.value = `${text  }\n\n${  TEXT_PLACEHOLDER}`;
+        textarea.value = `${text}\n\n${TEXT_PLACEHOLDER}`;
       }
       this.handlePromptTemplateChange();
     }
@@ -366,7 +366,7 @@ class SettingsManager {
     saveBtn.textContent = 'Saving...';
     saveBtn.disabled = true;
 
-    const profile = await this.communication.getProfile()
+    const profile = await this.communication.getProfile();
 
     try {
       const suggestionType = {

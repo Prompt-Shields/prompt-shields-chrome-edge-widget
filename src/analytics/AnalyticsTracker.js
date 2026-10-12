@@ -105,6 +105,7 @@ export class AnalyticsTracker {
    * @param {AnalyticsEvent} event - The event to track
    * @returns {Promise<void>}
    */
+  // eslint-disable-next-line no-unused-vars -- abstract method; the parameter documents the contract
   async track(event) {
     throw new Error('Method track() must be implemented');
   }

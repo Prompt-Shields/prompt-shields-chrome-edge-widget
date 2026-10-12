@@ -177,6 +177,7 @@ class HTMLSanitizer {
     }
 
     // Remove null bytes and other dangerous characters
+    // eslint-disable-next-line no-control-regex -- stripping control characters is the point
     return text.replace(/\0/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
   }
 }

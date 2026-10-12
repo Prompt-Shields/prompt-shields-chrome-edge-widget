@@ -128,7 +128,7 @@
         var obj = {}; obj[key] = queue
         chrome.storage.local.set(obj, function () { resolve() })
       } else {
-        try { localStorage.setItem(key, JSON.stringify(queue)) } catch (e) {}
+        try { localStorage.setItem(key, JSON.stringify(queue)) } catch (e) { /* quota / private mode */ }
         resolve()
       }
     })

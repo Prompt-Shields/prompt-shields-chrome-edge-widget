@@ -116,7 +116,8 @@ const InputValidator = {
     }
 
     // Remove null bytes and control characters
-    let sanitized = input.replace(/\0/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    // eslint-disable-next-line no-control-regex -- stripping control characters is the point
+    const sanitized = input.replace(/\0/g, '').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
     // Create temporary element for text content extraction
     const div = document.createElement('div');
@@ -364,7 +365,7 @@ const SecureApiClient = {
       clearTimeout(timeoutId);
 
       if (error.name === 'AbortError') {
-        throw new Error('Request timeout');
+        throw new Error('Request timeout', { cause: error });
       }
 
       throw error;
@@ -426,7 +427,7 @@ const SecureApiClient = {
       clearTimeout(timeoutId);
 
       if (error.name === 'AbortError') {
-        throw new Error('Upload timeout');
+        throw new Error('Upload timeout', { cause: error });
       }
 
       throw error;

@@ -169,7 +169,7 @@ export class FirebaseTracker extends AnalyticsTracker {
    * Initialize the tracker
    */
   async initialize() {
-    console.info(`🔥 Firebase tracker initialized`);
+    console.info('🔥 Firebase tracker initialized');
     console.info(`🔥 Project ID: ${this.projectId}`);
     console.info(`🔥 Installation ID: ${this.installationId}`);
 
@@ -225,58 +225,58 @@ export class FirebaseTracker extends AnalyticsTracker {
     const params = event.params || {};
 
     switch (eventName) {
-      case 'performance_metric':
-        await this._trackPerformanceMetric(
-          params.metric_name || 'unknown',
-          params.value || 0,
-          params.unit || 'ms'
-        );
-        break;
+    case 'performance_metric':
+      await this._trackPerformanceMetric(
+        params.metric_name || 'unknown',
+        params.value || 0,
+        params.unit || 'ms'
+      );
+      break;
 
-      case 'error_occurred':
-        await this._trackNonFatalError(
-          params.error_domain || 'unknown',
-          params.error_code || '0',
-          params.error_message || 'Unknown error'
-        );
-        break;
+    case 'error_occurred':
+      await this._trackNonFatalError(
+        params.error_domain || 'unknown',
+        params.error_code || '0',
+        params.error_message || 'Unknown error'
+      );
+      break;
 
-      case 'crash_detected':
-        await this._recordCrash(params.reason || 'Unknown crash');
-        break;
+    case 'crash_detected':
+      await this._recordCrash(params.reason || 'Unknown crash');
+      break;
 
-      case 'suggestion_processing_started':
-        this.startTrace(`suggestion_${params.type || 'unknown'}`);
-        break;
+    case 'suggestion_processing_started':
+      this.startTrace(`suggestion_${params.type || 'unknown'}`);
+      break;
 
-      case 'suggestion_processing_completed':
-        this.endTrace(`suggestion_${params.type || 'unknown'}`, params.duration);
-        break;
+    case 'suggestion_processing_completed':
+      this.endTrace(`suggestion_${params.type || 'unknown'}`, params.duration);
+      break;
 
-      case 'suggestion_processing_failed':
-        this.endTrace(`suggestion_${params.type || 'unknown'}`, null, params.error);
-        break;
+    case 'suggestion_processing_failed':
+      this.endTrace(`suggestion_${params.type || 'unknown'}`, null, params.error);
+      break;
 
-      case 'text_injection_started':
-        this.startTrace(`text_injection_${params.app || 'unknown'}`);
-        break;
+    case 'text_injection_started':
+      this.startTrace(`text_injection_${params.app || 'unknown'}`);
+      break;
 
-      case 'text_injection_succeeded':
-        this.endTrace(`text_injection_${params.app || 'unknown'}`);
-        break;
+    case 'text_injection_succeeded':
+      this.endTrace(`text_injection_${params.app || 'unknown'}`);
+      break;
 
-      case 'text_injection_failed':
-        this.endTrace(`text_injection_${params.app || 'unknown'}`, null, params.error);
-        break;
+    case 'text_injection_failed':
+      this.endTrace(`text_injection_${params.app || 'unknown'}`, null, params.error);
+      break;
 
-      case 'app_launched':
-      case 'extension_installed':
-        this.startTrace('app_startup');
-        break;
+    case 'app_launched':
+    case 'extension_installed':
+      this.startTrace('app_startup');
+      break;
 
-      default:
-        // Other events are handled by other trackers
-        break;
+    default:
+      // Other events are handled by other trackers
+      break;
     }
   }
 

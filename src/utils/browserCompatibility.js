@@ -196,18 +196,18 @@ export class BrowserCompatibility {
   isApiAvailable(apiName) {
     try {
       switch (apiName) {
-        case 'identity':
-          return typeof chrome !== 'undefined' && chrome.identity;
-        case 'storage':
-          return typeof chrome !== 'undefined' && chrome.storage;
-        case 'runtime':
-          return typeof chrome !== 'undefined' && chrome.runtime;
-        case 'tabs':
-          return typeof chrome !== 'undefined' && chrome.tabs;
-        case 'action':
-          return typeof chrome !== 'undefined' && chrome.action;
-        default:
-          return false;
+      case 'identity':
+        return typeof chrome !== 'undefined' && chrome.identity;
+      case 'storage':
+        return typeof chrome !== 'undefined' && chrome.storage;
+      case 'runtime':
+        return typeof chrome !== 'undefined' && chrome.runtime;
+      case 'tabs':
+        return typeof chrome !== 'undefined' && chrome.tabs;
+      case 'action':
+        return typeof chrome !== 'undefined' && chrome.action;
+      default:
+        return false;
       }
     } catch (error) {
       console.warn(`API availability check failed for ${apiName}:`, error);

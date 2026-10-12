@@ -10,6 +10,9 @@
     "identity.email",
     "alarms"
   ],
+  "storage": {
+    "managed_schema": "managed_schema.json"
+  },
   "oauth2": {
     "client_id": "hrENjEgrjCmSctuVaTA3XVRMbJP7qjqw",
     "scopes": [
@@ -159,6 +162,9 @@
       ],
       "js": [
         "lib/pii-detector.js",
+        "lib/injection-detector.js",
+        "lib/custom-rules.js",
+        "lib/file-guard.js",
         "lib/redaction-tooltip.js",
         "lib/violation-reporter.js",
         "lib/issue-sidebar.js",

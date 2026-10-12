@@ -18,6 +18,7 @@ function verifyDistFolder(target) {
   const distPath = `dist-${target}`;
   const requiredFiles = [
     'manifest.json',
+    'managed_schema.json',
     'background.js',
     'content.js',
     'popup.js',
@@ -113,7 +114,7 @@ function main() {
 
   console.log('🚀 Starting build verification...\n');
 
-  let allPassed = true;
+  let allPassed;
 
   if (target) {
     allPassed = verifyDistFolder(target);

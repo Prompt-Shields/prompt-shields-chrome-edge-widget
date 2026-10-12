@@ -9,7 +9,7 @@ importScripts('lib/atlas-bundle.js');
 
 // Config is loaded from config/config.js via importScripts
 // The config file contains only the environment-specific configuration
-// eslint-disable-next-line no-undef
+ 
 if (typeof Config === 'undefined') {
   throw new Error('Config failed to load - config/config.js must be present and valid');
 }
@@ -31,7 +31,7 @@ let authConfig, AUTH0_DOMAIN, CLIENT_ID, AUDIENCE, tokenUrl, jwksUrl, serviceCon
 // Initialize auth config from unified configuration system
 function initializeAuthConfig() {
   console.log('Background: Checking Config availability:', typeof Config);
-  // eslint-disable-next-line no-undef
+   
   if (typeof Config === 'undefined') {
     throw new Error('Config is not defined - config.js may not have loaded properly');
   }
@@ -102,7 +102,7 @@ chrome.runtime.onInstalled.addListener((details) => {
  * @returns {string} API URL
  */
 function getApiUrl(endpoint) {
-  // eslint-disable-next-line no-undef
+   
   return serviceConfig.getApiUrl(endpoint);
 }
 
@@ -222,7 +222,7 @@ chrome.runtime.onConnect.addListener((port) => {
         port.postMessage({ closed: true });
       } catch (e) {
         if (e && e.name === 'AbortError') return;
-        try { port.postMessage({ error: e && e.message ? e.message : 'Chat stream error' }); } catch (_) {}
+        try { port.postMessage({ error: e && e.message ? e.message : 'Chat stream error' }); } catch (_) { /* port already closed */ }
       }
     });
     return; // chat-stream handled; don't attach the auth message handler below
@@ -790,20 +790,20 @@ async function authorize() {
 
   return new Promise((resolve, reject) => {
     console.log('Starting Auth0 authorization...');
-    // eslint-disable-next-line no-undef
+     
     console.log('Auth0 Domain:', AUTH0_DOMAIN);
-    // eslint-disable-next-line no-undef
+     
     console.log('Client ID:', CLIENT_ID);
-    // eslint-disable-next-line no-undef
+     
     console.log('Audience:', AUDIENCE);
 
     const authOptions = {
       url:
-        // eslint-disable-next-line no-undef
+         
         `https://${AUTH0_DOMAIN
-        // eslint-disable-next-line no-undef
+         
         }/authorize?audience=${AUDIENCE
-        // eslint-disable-next-line no-undef
+         
         }&client_id=${CLIENT_ID
         }&redirect_uri=${encodeURIComponent(browserCompat.getRedirectURI())
         }&response_type=${encodeURIComponent('code')
@@ -827,9 +827,9 @@ async function authorize() {
             const idToken = response['id_token'];
 
             const validationParams = [
-              // eslint-disable-next-line no-undef
+               
               [idToken, jwksUrl],
-              // eslint-disable-next-line no-undef
+               
               [accessToken, jwksUrl]
             ];
             validateJWT(validationParams)
@@ -1516,7 +1516,7 @@ function sendAuthUpdate(isAuthenticated) {
 // API
 
 async function fetchToken(code) {
-  // eslint-disable-next-line no-undef
+   
   return await fetch(tokenUrl, {
     headers: {
       'Content-Type': 'application/json'
@@ -1524,7 +1524,7 @@ async function fetchToken(code) {
     method: 'POST',
     body: JSON.stringify({
       'grant_type': 'authorization_code',
-      // eslint-disable-next-line no-undef
+       
       'client_id': CLIENT_ID,
       'code': `${code}`,
       'redirect_uri': browserCompat.getRedirectURI()

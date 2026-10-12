@@ -5,6 +5,10 @@ in-page AI chat, Atlas telemetry) need two pieces of backend wiring before the c
 and telemetry paths are live. PII detection, the redaction tooltip, and the issue
 sidebar work **without** any of this — they run purely client-side.
 
+For managed fleets, prefer configuring Atlas through enterprise policy (Intune /
+GPO) instead of `setAtlasConfig` — policy values override local ones and users
+cannot change them. See [ENTERPRISE_DEPLOYMENT.md](ENTERPRISE_DEPLOYMENT.md).
+
 ---
 
 ## 1. In-page AI chat

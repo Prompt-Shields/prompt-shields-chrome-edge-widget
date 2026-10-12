@@ -78,7 +78,7 @@ class DeploymentManager {
       console.log(`✅ Backup created in: ${this.backupDir}\n`);
 
     } catch (error) {
-      throw new Error(`Backup creation failed: ${error.message}`);
+      throw new Error(`Backup creation failed: ${error.message}`, { cause: error });
     }
   }
 
@@ -122,7 +122,7 @@ class DeploymentManager {
       console.log(`   - Version: ${manifest.version}\n`);
 
     } catch (error) {
-      throw new Error(`Manifest update failed: ${error.message}`);
+      throw new Error(`Manifest update failed: ${error.message}`, { cause: error });
     }
   }
 
@@ -183,7 +183,7 @@ class DeploymentManager {
       console.log('✅ JavaScript syntax validation passed\n');
 
     } catch (error) {
-      throw new Error(`JavaScript validation failed: ${error.message}`);
+      throw new Error(`JavaScript validation failed: ${error.message}`, { cause: error });
     }
   }
 
